@@ -27,7 +27,7 @@ jobs:
         with:
           repository: truenas/scale-build
           ref: release/25.10-RC.1
-          path: /scale-build
+          path: scale-build
           
       - name: Move repo to /mnt
         run: |
