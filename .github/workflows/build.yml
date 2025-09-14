@@ -27,7 +27,11 @@ jobs:
         with:
           repository: truenas/scale-build
           ref: release/25.10-RC.1
-          path: /mnt/scale-build 
+          path: /scale-build
+          
+      - name: Move repo to /mnt
+        run: |
+          sudo cp -r $GITHUB_WORKSPACE/scale-build /mnt/scale-build
 
       - name: Run build inside Debian Bookworm
         uses: addnab/docker-run-action@v3
