@@ -1,26 +1,22 @@
-# This is a basic workflow to help you get started with Actions
-
-name: Build TrueNAS Scale
+name: Build TrueNAS Scale image
 
 on:
-  workflow_dispatch:   # manual trigger
+  workflow_dispatch:
   push:
     branches:
       - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest   # GitHub-hosted Ubuntu runner
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Maximize build disk space
+      - name: Checkout workflow repo (for Dockerfile)
+        uses: actions/checkout@v4
+
+      - name: Build custom Debian Bookworm docker image
         run: |
-          df -h
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          df -h
+          docker build -t truenas-build -f Dockerfile .
 
       - name: Checkout TrueNAS scale-build
         uses: actions/checkout@v4
@@ -31,18 +27,41 @@ jobs:
           
       - name: Move repo to /mnt
         run: |
+          sudo rm -rf /mnt/scale-build
           sudo cp -r $GITHUB_WORKSPACE/scale-build /mnt/scale-build
 
-      - name: Run build inside Debian Bookworm
+      - name: Checkout sources
         uses: addnab/docker-run-action@v3
         with:
-          image: debian:bookworm-slim
+          image: truenas-build
           options: --privileged -v /mnt:/mnt
           run: |
             cd /mnt/scale-build
-            ls -la
-            apt-get update
-            apt-get install -y build-essential debootstrap git python3-pip python3-venv squashfs-tools unzip libjson-perl rsync libarchive-tools
-            df -h
-            mount
-            make
+            make checkout
+
+      - name: Build .deb packages
+        uses: addnab/docker-run-action@v3
+        with:
+          image: truenas-build
+          options: --privileged -v /mnt:/mnt
+          run: |
+            cd /mnt/scale-build
+            make packages
+
+      - name: Build system update image
+        uses: addnab/docker-run-action@v3
+        with:
+          image: truenas-build
+          options: --privileged -v /mnt:/mnt
+          run: |
+            cd /mnt/scale-build
+            make update
+
+      - name: Build installation ISO image
+        uses: addnab/docker-run-action@v3
+        with:
+          image: truenas-build
+          options: --privileged -v /mnt:/mnt
+          run: |
+            cd /mnt/scale-build
+            make iso
