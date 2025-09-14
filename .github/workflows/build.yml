@@ -20,7 +20,6 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
           sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo docker image prune --all --force
           df -h
 
       - name: Checkout TrueNAS scale-build
@@ -28,15 +27,15 @@ jobs:
         with:
           repository: truenas/scale-build
           ref: release/25.10-RC.1
-          path: scale-build 
+          path: /mnt/scale-build 
 
       - name: Run build inside Debian Bookworm
         uses: addnab/docker-run-action@v3
         with:
           image: debian:bookworm-slim
-          options: --privileged -v ${{ github.workspace }}:/workspace
+          options: --privileged -v /mnt:/mnt
           run: |
-            cd /workspace/scale-build
+            cd /mnt/scale-build
             ls -la
             apt-get update
             apt-get install -y build-essential debootstrap git python3-pip python3-venv squashfs-tools unzip libjson-perl rsync libarchive-tools
