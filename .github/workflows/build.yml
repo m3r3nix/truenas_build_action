@@ -20,6 +20,7 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
           sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
           df -h
 
       - name: Checkout TrueNAS scale-build
@@ -33,7 +34,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: debian:bookworm-slim
-          options: -v ${{ github.workspace }}:/workspace
+          options: --privileged -v ${{ github.workspace }}:/workspace
           run: |
             cd /workspace/scale-build
             ls -la
