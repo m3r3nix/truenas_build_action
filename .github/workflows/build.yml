@@ -14,14 +14,13 @@ jobs:
 
     steps:
       - name: Maximize build disk space
-        with:
-          run: |
-            df -h
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /opt/hostedtoolcache/CodeQL
-            df -h
+        run: |
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          df -h
 
       - name: Checkout TrueNAS scale-build
         uses: actions/checkout@v4
