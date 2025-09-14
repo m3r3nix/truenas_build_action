@@ -33,9 +33,9 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: debian:bookworm-slim
-          options: -v ${{ github.workspace }}:/workspace
+          options: -v ${{ github.workspace }}:/workspace/scale-build
           run: |
-            cd /workspace
+            cd /workspace/scale-build
             ls -la
             apt-get update
             apt-get install -y build-essential debootstrap git python3-pip python3-venv squashfs-tools unzip libjson-perl rsync libarchive-tools
