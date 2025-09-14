@@ -18,7 +18,6 @@ jobs:
         with:
           root-reserve-mb: 4096
           swap-size-mb: 1024
-          build-mount-path-ownership: root:root
           remove-dotnet: true
           remove-android: true
           remove-haskell: true
@@ -37,6 +36,7 @@ jobs:
           image: debian:bookworm-slim
           options: -v ${{ github.workspace }}:/workspace
           run: |
+            chown -R runner:runner /workspace
             cd /workspace/scale-build
             ls -la
             apt-get update
